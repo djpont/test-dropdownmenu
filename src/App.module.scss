@@ -1,0 +1,27 @@
+.app {
+	padding: 20px;
+
+	> p {
+		line-height: 3rem;
+		letter-spacing: .1rem;
+		padding: 2rem 0;
+		color: #aaa;
+	}
+}
+
+.button {
+	border: none;
+	border-radius: 8px;
+	background: #ccc;
+	cursor: pointer;
+	padding: 8px;
+
+	&:hover {
+		background: #c5c5c5;
+	}
+}
+
+.flex {
+	display: flex;
+	justify-content: space-between;
+}
