@@ -41,12 +41,12 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 			document.removeEventListener('scroll', calculateDropWaysAndVisible)
 			window.removeEventListener('resize', calculateDropWaysAndVisible)
 		};
-	}, []);
+	}, [closeMenu]);
 
 	// При смене контекста обновляем isOpened
 	useEffect(() => {
 		setIsOpened(openedMenuId === id);
-	}, [openedMenuId]);
+	}, [openedMenuId, id]);
 
 	// Метод рассчетов в какую сторону разворачивать меню, и виден ли триггер
 	const calculateDropWaysAndVisible = (): void => {
