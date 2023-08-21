@@ -78,12 +78,12 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 	}, [isOpened]);
 
 	// Открытие меню при ховере на триггер
-	const triggerMouseEnterHandler = () => {
+	const mouseEnterHandler = () => {
 		openMenu(id);
 	};
 
 	// Закрытие меню при анховере с триггера (если меню не открыто кликом)
-	const triggerMouseLeaveHandler = () => {
+	const mouseLeaveHandler = () => {
 		if (!isOpenedByClick) {
 			closeMenu();
 		}
@@ -107,26 +107,28 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 		// Теперь, если курсор с триггера перемещается в свободную область - меню закрывается,
 		// А если перемещается в самое меню, то НЕ закрывается.
 		// При этом, если меню было открыто кликом, то оно не закроется в любом случае, пока не будет произведен клик.
-		const menuMouseEnterHandler = () => {
-			openMenu(id);
-		};
-
-		const menuMouseLeaveHandler = () => {
-			if (!isOpenedByClick) {
-				closeMenu();
-			}
-		}
+		// const menuMouseEnterHandler = () => {
+		// 	openMenu(id);
+		// };
+		//
+		// const menuMouseLeaveHandler = () => {
+		// 	if (!isOpenedByClick) {
+		// 		closeMenu();
+		// 	}
+		// }
 
 		const menuRefCurrent = menuRef?.current;
-		menuRefCurrent?.addEventListener('mouseenter', menuMouseEnterHandler);
-		menuRefCurrent?.addEventListener('mouseleave', menuMouseLeaveHandler);
+		menuRefCurrent?.addEventListener('mouseenter', mouseEnterHandler);
+		menuRefCurrent?.addEventListener('mouseleave', mouseLeaveHandler);
 
 		return () => {
-			menuRefCurrent?.removeEventListener('mouseenter', menuMouseEnterHandler);
-			menuRefCurrent?.removeEventListener('mouseleave', menuMouseLeaveHandler);
+			menuRefCurrent?.removeEventListener('mouseenter', mouseEnterHandler);
+			menuRefCurrent?.removeEventListener('mouseleave', mouseLeaveHandler);
 		}
-
-	}, [isOpened, openMenu, closeMenu, id, isOpenedByClick, setIsOpenedByClick]);
+		// Добавил eslint-disable, т.к. eslint требовал обернуть mouseEnterHandler и mouseLeaveHandler в useCallback
+		// и добавить их в зависимости useEffect
+		// eslint-disable-next-line
+	}, [isOpened]);
 
 	return (
 		<div className={styles.container}>
@@ -134,8 +136,8 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 				ref={triggerRef}
 				className={styles.trigger}
 				onClick={triggerClickHandler}
-				onMouseEnter={triggerMouseEnterHandler}
-				onMouseLeave={triggerMouseLeaveHandler}
+				onMouseEnter={mouseEnterHandler}
+				onMouseLeave={mouseLeaveHandler}
 			>
 				{children}
 			</div>
