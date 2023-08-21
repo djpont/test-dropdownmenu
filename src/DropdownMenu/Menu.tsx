@@ -8,6 +8,7 @@ const Menu: ForwardRefRenderFunction<HTMLDivElement, TMenu> = (
 		toRight = true,
 		closeMenu,
 		list,
+		...props
 	}, ref,
 ) => {
 
@@ -19,7 +20,7 @@ const Menu: ForwardRefRenderFunction<HTMLDivElement, TMenu> = (
 		return classNames.join(' ');
 	}
 
-	return <div ref={ref} className={getClassNames()}>
+	return <div ref={ref} className={getClassNames()} {...props}>
 		<ul>
 			{list.map(({text, callback, Icon}, key) => {
 				const onClick = () => {

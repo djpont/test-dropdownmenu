@@ -1,4 +1,4 @@
-import {FC, ReactNode} from 'react';
+import {FC, HTMLAttributes, ReactNode} from 'react';
 
 // Тип элемента меню
 type TMenuItem = {
@@ -22,4 +22,4 @@ export type TMenu = {
 	toRight: boolean;
 	closeMenu: () => void;
 	list: TMenuItems;
-}
+} & HTMLAttributes<HTMLDivElement>;

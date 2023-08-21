@@ -70,6 +70,12 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 		setDropToDown(triggerBox.bottom + menuBox.height < window.innerHeight);
 		setDropToRight(triggerBox.left + menuBox.width < window.innerWidth);
 	}
+	
+	// Эффект при изменении isOpen
+	useEffect(() => {
+		// Сбрасываем isOpenedByClick, если меню закыто
+		if (!isOpened) setIsOpenedByClick(false);
+	}, [isOpened]);
 
 	// Считаем в какую сторону развернуть, если меню открыто
 	// Использую useLayoutEffect вместо useEffect, чтобы иметь доступ с DOM-элементу меню
@@ -97,39 +103,6 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 		})();
 	}
 
-	// Эффект при изменении isOpen
-	useEffect(() => {
-		// Сбрасываем isOpenedByClick, если меню закыто
-		if (!isOpened) setIsOpenedByClick(false);
-
-		// ЭТОГО НЕ БЫЛО В ЗАДАНИИ, НО Я ПОСЧИТАЛ НЕОБОДИМЫМ ДОБАВИТЬ
-		// На меню вешаем события, чтобы отлавливать перемещение курсора с триггера на меню
-		// Теперь, если курсор с триггера перемещается в свободную область - меню закрывается,
-		// А если перемещается в самое меню, то НЕ закрывается.
-		// При этом, если меню было открыто кликом, то оно не закроется в любом случае, пока не будет произведен клик.
-		// const menuMouseEnterHandler = () => {
-		// 	openMenu(id);
-		// };
-		//
-		// const menuMouseLeaveHandler = () => {
-		// 	if (!isOpenedByClick) {
-		// 		closeMenu();
-		// 	}
-		// }
-
-		const menuRefCurrent = menuRef?.current;
-		menuRefCurrent?.addEventListener('mouseenter', mouseEnterHandler);
-		menuRefCurrent?.addEventListener('mouseleave', mouseLeaveHandler);
-
-		return () => {
-			menuRefCurrent?.removeEventListener('mouseenter', mouseEnterHandler);
-			menuRefCurrent?.removeEventListener('mouseleave', mouseLeaveHandler);
-		}
-		// Добавил eslint-disable, т.к. eslint требовал обернуть mouseEnterHandler и mouseLeaveHandler в useCallback
-		// и добавить их в зависимости useEffect
-		// eslint-disable-next-line
-	}, [isOpened]);
-
 	return (
 		<div className={styles.container}>
 			<div
@@ -148,6 +121,8 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 					toRight={dropToRight}
 					closeMenu={closeMenu}
 					list={list}
+					onMouseEnter={mouseEnterHandler}
+					onMouseLeave={mouseLeaveHandler}
 				/>}
 		</div>);
 }
