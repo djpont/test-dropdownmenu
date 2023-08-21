@@ -107,12 +107,14 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 		// Теперь, если курсор с триггера перемещается в свободную область - меню закрывается,
 		// А если перемещается в самое меню, то НЕ закрывается.
 		// При этом, если меню было открыто кликом, то оно не закроется в любом случае, пока не будет произведен клик.
-		menuRef?.current?.addEventListener('mouseenter', mouseEnterHandler);
-		menuRef?.current?.addEventListener('mouseleave', mouseLeaveHandler);
+
+		const menuRefCurrent = menuRef?.current;
+		menuRefCurrent?.addEventListener('mouseenter', mouseEnterHandler);
+		menuRefCurrent?.addEventListener('mouseleave', mouseLeaveHandler);
 
 		return () => {
-			menuRef?.current?.removeEventListener('mouseenter', mouseEnterHandler);
-			menuRef?.current?.removeEventListener('mouseleave', mouseLeaveHandler);
+			menuRefCurrent?.removeEventListener('mouseenter', mouseEnterHandler);
+			menuRefCurrent?.removeEventListener('mouseleave', mouseLeaveHandler);
 		}
 
 	}, [isOpened]);
