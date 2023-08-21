@@ -117,7 +117,7 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 			menuRefCurrent?.removeEventListener('mouseleave', mouseLeaveHandler);
 		}
 
-	}, [isOpened]);
+	}, [isOpened, mouseEnterHandler, mouseLeaveHandler]);
 
 	return (
 		<div className={styles.container}>
