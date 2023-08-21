@@ -78,12 +78,12 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 	}, [isOpened]);
 
 	// Открытие меню при ховере на триггер
-	const mouseEnterHandler = () => {
+	const triggerMouseEnterHandler = () => {
 		openMenu(id);
-	}
+	};
 
 	// Закрытие меню при анховере с триггера (если меню не открыто кликом)
-	const mouseLeaveHandler = () => {
+	const triggerMouseLeaveHandler = () => {
 		if (!isOpenedByClick) {
 			closeMenu();
 		}
@@ -107,17 +107,26 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 		// Теперь, если курсор с триггера перемещается в свободную область - меню закрывается,
 		// А если перемещается в самое меню, то НЕ закрывается.
 		// При этом, если меню было открыто кликом, то оно не закроется в любом случае, пока не будет произведен клик.
+		const menuMouseEnterHandler = () => {
+			openMenu(id);
+		};
 
-		const menuRefCurrent = menuRef?.current;
-		menuRefCurrent?.addEventListener('mouseenter', mouseEnterHandler);
-		menuRefCurrent?.addEventListener('mouseleave', mouseLeaveHandler);
-
-		return () => {
-			menuRefCurrent?.removeEventListener('mouseenter', mouseEnterHandler);
-			menuRefCurrent?.removeEventListener('mouseleave', mouseLeaveHandler);
+		const menuMouseLeaveHandler = () => {
+			if (!isOpenedByClick) {
+				closeMenu();
+			}
 		}
 
-	}, [isOpened, mouseEnterHandler, mouseLeaveHandler]);
+		const menuRefCurrent = menuRef?.current;
+		menuRefCurrent?.addEventListener('mouseenter', menuMouseEnterHandler);
+		menuRefCurrent?.addEventListener('mouseleave', menuMouseLeaveHandler);
+
+		return () => {
+			menuRefCurrent?.removeEventListener('mouseenter', menuMouseEnterHandler);
+			menuRefCurrent?.removeEventListener('mouseleave', menuMouseLeaveHandler);
+		}
+
+	}, [isOpened, openMenu, closeMenu, id, isOpenedByClick, setIsOpenedByClick]);
 
 	return (
 		<div className={styles.container}>
@@ -125,8 +134,8 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 				ref={triggerRef}
 				className={styles.trigger}
 				onClick={triggerClickHandler}
-				onMouseEnter={mouseEnterHandler}
-				onMouseLeave={mouseLeaveHandler}
+				onMouseEnter={triggerMouseEnterHandler}
+				onMouseLeave={triggerMouseLeaveHandler}
 			>
 				{children}
 			</div>
