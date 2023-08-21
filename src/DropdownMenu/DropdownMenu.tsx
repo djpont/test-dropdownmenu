@@ -16,6 +16,7 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 	const {openedMenuId, openMenu, closeMenu} = useContext(MenuContext);
 
 	const [isOpened, setIsOpened] = useState(false);
+	const [isOpenedByClick, setIsOpenedByClick] = useState(false);
 	const [dropToDown, setDropToDown] = useState<boolean>(true);
 	const [dropToRight, setDropToRight] = useState<boolean>(true);
 	const [isTriggerVisible, setIsTriggerVisible] = useState<boolean>(true);
@@ -70,17 +71,51 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 		setDropToRight(triggerBox.left + menuBox.width < window.innerWidth);
 	}
 
+	// Считаем в какую сторону развернуть, если меню открыто
+	// Использую useLayoutEffect вместо useEffect, чтобы иметь доступ с DOM-элементу меню
 	useLayoutEffect(() => {
 		calculateDropWaysAndVisible();
 	}, [isOpened]);
 
-	const triggerClickHandler = () => {
-		isOpened ? closeMenu() : openMenu(id);
-	}
-
-	const triggerMouseEnterHandler = () => {
+	// Открытие меню при ховере на триггер
+	const mouseEnterHandler = () => {
 		openMenu(id);
 	}
+
+	// Закрытие меню при анховере с триггера (если меню не открыто кликом)
+	const mouseLeaveHandler = () => {
+		if (!isOpenedByClick) {
+			closeMenu();
+		}
+	}
+
+	// Клик по триггеру
+	const triggerClickHandler = () => {
+		isOpened ? closeMenu() : (() => {
+			openMenu(id);
+			setIsOpenedByClick(true)
+		})();
+	}
+
+	// Эффект при изменении isOpen
+	useEffect(() => {
+		// Сбрасываем isOpenedByClick, если меню закыто
+		if (!isOpened) setIsOpenedByClick(false);
+
+		// ЭТОГО НЕ БЫЛО В ЗАДАНИИ, НО Я ПОСЧИТАЛ НЕОБОДИМЫМ ДОБАВИТЬ
+		// На меню вешаем события, чтобы отлавливать перемещение курсора с триггера на меню
+		// Теперь, если курсор с триггера перемещается в свободную область - меню закрывается,
+		// А если перемещается в самое меню, то НЕ закрывается.
+		// При этом, если меню было открыто кликом, то оно не закроется в любом случае, пока не будет произведен клик.
+		menuRef?.current?.addEventListener('mouseenter', mouseEnterHandler);
+		menuRef?.current?.addEventListener('mouseleave', mouseLeaveHandler);
+
+		return () => {
+			menuRef?.current?.removeEventListener('mouseenter', mouseEnterHandler);
+			menuRef?.current?.removeEventListener('mouseleave', mouseLeaveHandler);
+		}
+
+	}, [isOpened]);
 
 	return (
 		<div className={styles.container}>
@@ -88,13 +123,19 @@ const DropdownMenu: FC<TDropdown> = ({list, children}) => {
 				ref={triggerRef}
 				className={styles.trigger}
 				onClick={triggerClickHandler}
-				onMouseEnter={triggerMouseEnterHandler}
+				onMouseEnter={mouseEnterHandler}
+				onMouseLeave={mouseLeaveHandler}
 			>
 				{children}
 			</div>
 			{isOpened && isTriggerVisible &&
-				<MenuWithRef ref={menuRef} toDown={dropToDown} toRight={dropToRight} closeMenu={closeMenu}
-							 list={list}/>}
+				<MenuWithRef
+					ref={menuRef}
+					toDown={dropToDown}
+					toRight={dropToRight}
+					closeMenu={closeMenu}
+					list={list}
+				/>}
 		</div>);
 }
 
